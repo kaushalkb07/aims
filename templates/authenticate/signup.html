@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<h2 class="container">Sign Up</h2>
+<form class="container" action="/auth/signup/" method="post">
+    {% csrf_token %}
+    
+    <div class="form-group">
+        <label for="inputUsername">Username</label>
+        <input name="username" type="text" id="inputUsername" class="form-control" placeholder="Username" required autofocus>
+    </div>
+    
+    <div class="form-group">
+        <label for="inputFirstname">First Name</label>
+        <input name="firstname" type="text" id="inputFirstname" class="form-control" placeholder="First Name" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="inputLastname">Last Name</label>
+        <input name="lastname" type="text" id="inputLastname" class="form-control" placeholder="Last Name" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="inputEmail">Email</label>
+        <input name="email" type="email" id="inputEmail" class="form-control" placeholder="Email address" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="inputPassword">Password</label>
+        <input name="password" type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+    </div>
+    
+    <div class="form-group">
+        <label for="inputConfirmPassword">Confirm Password</label>
+        <input name="password2" type="password" id="inputConfirmPassword" class="form-control" placeholder="Confirm Password" required>
+    </div>
+
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Sign Up</button>
+</form>
+
+<div class="form-group container mt-2">
+    <label>Already a registered user? <a href="/auth/signin">Sign In</a></label>
+</div>
+{% endblock body %}

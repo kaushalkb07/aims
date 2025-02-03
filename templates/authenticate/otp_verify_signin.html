@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<h2 class="container">OTP Sign In</h2>
+<!-- Sign-in form with JS-based JWT authentication -->
+<form method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+        <label>Enter OTP:</label>
+        <input type="text" name="otp" class="form-control" required>
+        <button type="submit">Verify OTP</button>
+        {% if messages %}{% for message in messages %}<p>{{ message }}</p>{% endfor %}{% endif %}
+    </div>
+</form>
+
+
+<!-- Registration link -->
+<div class="form-group container mt-2">
+    <label>Not a registered user? <a href="/signup">Sign Up</a></label>
+</div>
+
+{% endblock body %}
