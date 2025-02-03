@@ -5,7 +5,7 @@
 
     <ul class="navbar-nav">
         <form class="form-inline my-2 my-lg-0" method="GET" action="">
-            <input class="form-control mr-sm-2" type="search" name="query" placeholder="Search expenses..."
+            <input class="form-control mr-sm-2" type="search" name="query" placeholder="Search datas..."
                 value="{{ query }}" id="query">
             <button class="btn btn-outline-light my-2 my-sm-0" type="submit">Search</button>
         </form>
@@ -20,26 +20,26 @@
 
                             Welcome, {{request.user}}
                         </a></li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" href="/autoupdatedb/upload/rfid">
-                                Upload RFID Data
-                            </a>
-                        </li>  
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" href="/autoupdatedb/upload/product">
-                                Upload Product Data
-                            </a>
-                        </li> 
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" href="/autoupdatedb/upload/stock">
-                                Upload Stock Data
-                            </a>
-                        </li>   
-                     <li class="nav-item">
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="/autoupdatedb/upload/rfid">
+                            Upload RFID Data
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="/autoupdatedb/upload/product">
+                            Upload Product Data
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="/autoupdatedb/upload/stock">
+                            Upload Stock Data
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link text-dark" href="/auth/signout">
                             Logout
                         </a>
-                    </li>                   
+                    </li>
                 </ul>
             </div>
         </nav>
@@ -54,13 +54,81 @@
                     </div>
                 </div>
             </div>
-
-           
+    
+            <div class="dashboard-container">
+                <!-- RFID Entries Chart -->
+                <div class="dashboard-item">
+                    <h3>RFID Entries</h3>
+                    <canvas id="rfidChart"></canvas>
+                </div>
+                
+                <!-- Product Data Chart -->
+                <div class="dashboard-item">
+                    <h3>Product Analysis</h3>
+                    <canvas id="productChart"></canvas>
+                </div>
+        
+                <!-- Stock Movement Chart -->
+                <div class="dashboard-item">
+                    <h3>Stock Movement</h3>
+                    <canvas id="stockMovementChart"></canvas>
+                </div>
+            </div>
+        
         </main>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.7.1/dist/Chart.min.js"></script>
 
+<script>
+    // Data for RFID Entries Chart
+    var rfidCtx = document.getElementById('rfidChart').getContext('2d');
+    var rfidChart = new Chart(rfidCtx, {
+        type: 'pie',
+        data: {
+            labels: ['Active', 'Inactive'],
+            datasets: [{
+                data: [{{ chart_data.active_rfid_count }}, {{ chart_data.inactive_rfid_count }}],
+                backgroundColor: ['#4caf50', '#f44336'],
+                borderColor: '#ffffff',
+                borderWidth: 1
+            }]
+        }
+    });
+
+    // Data for Product Analysis Chart
+    var productCtx = document.getElementById('productChart').getContext('2d');
+    var productChart = new Chart(productCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Total Products'],
+            datasets: [{
+                label: 'Total Products',
+                data: [{{ chart_data.total_products }}],
+                backgroundColor: '#2196f3',
+                borderColor: '#ffffff',
+                borderWidth: 1
+            }]
+        }
+    });
+
+    // Data for Stock Movement Chart
+    var stockMovementCtx = document.getElementById('stockMovementChart').getContext('2d');
+    var stockMovementChart = new Chart(stockMovementCtx, {
+        type: 'line',
+        data: {
+            labels: ['Total In', 'Total Out'],
+            datasets: [{
+                label: 'Stock Movement',
+                data: [{{ chart_data.total_in }}, {{ chart_data.total_out }}],
+                borderColor: '#ff9800',
+                backgroundColor: 'rgba(255, 152, 0, 0.2)',
+                fill: true,
+                borderWidth: 2
+            }]
+        }
+    });
+</script>
 
 {% endblock body%}
