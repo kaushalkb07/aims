@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h4 class="mb-4">Product List</h4>
+
+    <div class="card shadow-lg p-4">
+        <table class="table table-hover table-striped text-center">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Quantity</th>
+                    <th>Assigned RFID</th>
+                    <th>Added By</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td><strong>{{ product.name }}</strong></td>
+                    <td>{{ product.category }}</td>
+                    <td>{{ product.quantity }}</td>
+                    <td>
+                        {% if product.assigned_rfid %}
+                            <span class="badge badge-success">{{ product.assigned_rfid.rfid_tag }}</span>
+                        {% else %}
+                            <span class="badge badge-secondary">Not Assigned</span>
+                        {% endif %}
+                    </td>
+                    <td><i class="text-primary">{{ product.user.username }}</i></td>
+                    <td>{{ product.timestamp|date:"Y-m-d H:i" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-muted">No products available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
