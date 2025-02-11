@@ -4,30 +4,30 @@
 <div class="container mt-4">
     <h4 class="mb-4">Add Product</h4>
     <div class="card shadow-sm p-4">
-        <form method="post">
+        <form method="post" class="needs-validation" novalidate>
             {% csrf_token %}
 
-            <div class="form-group">
-                <label for="{{ form.name.id_for_label }}">Product Name:</label>
+            <div class="mb-3">
+                <label for="{{ form.name.id_for_label }}" class="form-label">Product Name:</label>
                 {{ form.name }}
             </div>
 
-            <div class="form-group">
-                <label for="{{ form.category.id_for_label }}">Category:</label>
+            <div class="mb-3">
+                <label for="{{ form.category.id_for_label }}" class="form-label">Category:</label>
                 {{ form.category }}
             </div>
 
-            <div class="form-group">
-                <label for="{{ form.quantity.id_for_label }}">Quantity:</label>
+            <div class="mb-3">
+                <label for="{{ form.quantity.id_for_label }}" class="form-label">Quantity:</label>
                 {{ form.quantity }}
             </div>
 
-            <div class="form-group">
-                <label for="{{ form.assigned_rfid.id_for_label }}">Assign RFID:</label>
+            <div class="mb-3">
+                <label for="{{ form.assigned_rfid.id_for_label }}" class="form-label">Assign RFID:</label>
                 {{ form.assigned_rfid }}
             </div>
 
-            <button type="submit" class="btn btn-primary btn-block mt-3">Save Product</button>
+            <button type="submit" class="btn btn-primary w-100">Save Product</button>
         </form>
     </div>
 </div>
