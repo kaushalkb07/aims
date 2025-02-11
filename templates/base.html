@@ -16,9 +16,11 @@
         .sidebar .nav-item a {
             font-size: 15.23px;
         }
+
         .sidebar_sticky a {
             font-size: 10px;
         }
+
         .dashboard-container {
             display: flex;
             flex-wrap: wrap;
@@ -47,6 +49,28 @@
             width: 100% !important;
             max-width: 250px;
             height: 200px !important;
+        }
+
+        /* Sidebar Active Link Styling */
+        .nav-link {
+            color: #333;
+            font-weight: 500;
+            transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
+        }
+
+        /* Active Link Styling */
+        .nav-link.active {
+            background-color: #007bff !important;
+            color: #fff !important;
+            font-weight: bold;
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        /* Hover Effect */
+        .nav-link:hover {
+            background-color: rgba(0, 123, 255, 0.1);
+            border-radius: 5px;
         }
     </style>
 </head>
@@ -80,22 +104,56 @@
             <nav class="col-md-2 d-none d-md-block bg-light sidebar">
                 <div class="sidebar-sticky">
                     <ul class="nav flex-column">
+                        <li class="nav-item mt-3">
+                            <a class="nav-link {% if request.path == '/dashboard/' %}active{% endif %}"
+                                href="/dashboard">
+                                🏠 Dashboard
+                            </a>
+                        </li>
+
                         {% if request.user.is_superuser %}
-                        <li class="nav-item"><a class="nav-link text-dark" href="/database_admin/upload_rfid">🔄 Upload
-                                RFID Data</a></li>
-                        <li class="nav-item"><a class="nav-link text-dark" href="/database_admin/upload_product">📋
-                                Upload Product Data</a></li>
-                        <li class="nav-item"><a class="nav-link text-dark" href="/database_admin/upload_stock">📊 Upload
-                                Stock Data</a></li>
+                        <li class="nav-item ">
+                            <a class="nav-link {% if request.path == '/database_admin/upload_rfid/' %}active{% endif %}"
+                                href="/database_admin/upload_rfid">
+                                🔄 Upload RFID Data
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/database_admin/upload_product/' %}active{% endif %}"
+                                href="/database_admin/upload_product">
+                                📋 Upload Product Data
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/database_admin/upload_stock/' %}active{% endif %}"
+                                href="/database_admin/upload_stock">
+                                📊 Upload Stock Data
+                            </a>
+                        </li>
                         {% endif %}
-                        <li class="nav-item"><a class="nav-link text-dark" href="/database_admin/add_product">➕ Add
-                                Products</a></li>
-                        <li class="nav-item"><a class="nav-link text-dark" href="/database_admin/product_list">📦
-                                Product List</a></li>
-                        <li class="nav-item"><a class="nav-link text-danger" href="/auth/signout">🚪 Logout</a></li>
+
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/database_admin/add_product/' %}active{% endif %}"
+                                href="/database_admin/add_product">
+                                ➕ Add Products
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/database_admin/product_list/' %}active{% endif %}"
+                                href="/database_admin/product_list">
+                                📦 Product List
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-danger {% if request.path == '/auth/signout/' %}active{% endif %}"
+                                href="/auth/signout">
+                                🚪 Logout
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </nav>
+
 
             <!-- Main Content Area -->
             <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
@@ -124,14 +182,14 @@
             setTimeout(function () {
                 $(".alert").fadeOut("slow");
             }, 5000);
-    
+
             // Close button functionality
             $(".alert .close").click(function () {
                 $(this).closest(".alert").fadeOut("slow");
             });
         });
     </script>
-    
+
 </body>
 
 </html>
