@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<h2 class="container">Sign In</h2>
+<h2 class="container mt-4">Sign In</h2>
 <!-- Sign-in form with JS-based JWT authentication -->
 <form id="login-form" method="post" action="/auth/signin/" class="container">
     {% csrf_token %}

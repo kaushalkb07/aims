@@ -42,10 +42,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_cron',
     'authentication',
     'dashboard',
-    'autoupdatedb',
+    'database_admin',
 ]
 
 CRON_CLASSES = [
@@ -67,7 +66,7 @@ ROOT_URLCONF = 'aims_web.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # Add this line to point to your templates directory
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

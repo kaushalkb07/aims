@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<h2 class="container">OTP Sign In</h2>
+<h2 class="container-fluid mt-4">OTP Sign In</h2>
 <!-- Sign-in form with JS-based JWT authentication -->
-<form method="POST">
+<form method="POST" class="container-fluid">
     {% csrf_token %}
     <div class="form-group">
         <label>Enter OTP:</label>

@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class AutoupdatedbConfig(AppConfig):
+class DatabaseAdminConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'autoupdatedb'
+    name = 'database_admin'

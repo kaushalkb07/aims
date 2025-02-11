@@ -20,8 +20,12 @@ from django.shortcuts import redirect
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('autoupdatedb/', include('autoupdatedb.urls')),  # Include autoupdatedb app URLs
+    path('database_admin/', include('database_admin.urls')),  # Include autoupdatedb app URLs
     path('auth/', include('authentication.urls')),  # Include authentication app URLs
     path('dashboard/', include('dashboard.urls')),  # Include dashboard app URLs
     path('', lambda request: redirect('dashboard/', permanent=True)),  # Redirect root URL to dashboard
 ]
+
+admin.site.site_header = "AIMS Admin"
+admin.site.site_title = "AIMS Admin Portal"
+admin.site.index_title = "Welcome to AIMS Admin Portal"

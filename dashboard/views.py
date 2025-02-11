@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.db.models import Sum, Count
-from autoupdatedb.models import RFIDEntry, Product, StockMovement
+from database_admin.models import RFIDEntry, Product, StockMovement
 
 @login_required
 def dashboard(request):

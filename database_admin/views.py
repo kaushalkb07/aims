@@ -1,5 +1,4 @@
 from django.http import JsonResponse
-from .utils import update_stock_from_excel
 import pandas as pd
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -64,7 +63,3 @@ def upload_stock_movement(request):
     
     return render(request, 'dataupload/upload.html', {'model': 'StockMovement'})
 
-
-def trigger_manual_stock_update(request):
-    update_stock_from_excel()  # Run update immediately
-    return JsonResponse({"message": "Stock update triggered"})
