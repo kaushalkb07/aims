@@ -4,7 +4,7 @@
 <div class="container mt-4">
     <h4 class="mb-4">Product List</h4>
 
-    <div class="card shadow-lg p-4">
+    <div class="">
         <table class="table table-hover table-striped text-center">
             <thead class="thead-dark">
                 <tr>
@@ -14,6 +14,7 @@
                     <th>Assigned RFID</th>
                     <th>Added By</th>
                     <th>Timestamp</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -24,13 +25,36 @@
                     <td>{{ product.quantity }}</td>
                     <td>
                         {% if product.assigned_rfid %}
-                            <span class="badge badge-success">{{ product.assigned_rfid.rfid_tag }}</span>
+                        <span class="badge badge-success">{{ product.assigned_rfid.rfid_tag }}</span>
                         {% else %}
-                            <span class="badge badge-secondary">Not Assigned</span>
+                        <span class="badge badge-secondary">Not Assigned</span>
                         {% endif %}
                     </td>
-                    <td><i class="text-primary">{{ product.user.username }}</i></td>
+                    <td>
+                        {% if product.user %}
+                        {{ product.user.username }}
+                        {% else %}
+                        <span class="text-muted">[Unknown]</span>
+                        {% endif %}
+                    </td>
                     <td>{{ product.timestamp|date:"Y-m-d H:i" }}</td>
+                    <td>
+                        {% if product.sno %}
+                        <!-- Edit Button -->
+                        <a href="{% url 'edit_product' product.sno %}" class="btn btn-warning btn-sm">Edit</a>
+
+                        <!-- Delete Form -->
+                        <form method="post" action="{% url 'delete_product' product.sno %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm"
+                                onclick="return confirm('Are you sure you want to delete this product?');">
+                                Delete
+                            </button>
+                        </form>
+                        {% else %}
+                        <span class="text-muted">[Invalid Product]</span>
+                        {% endif %}
+                    </td>
                 </tr>
                 {% empty %}
                 <tr>

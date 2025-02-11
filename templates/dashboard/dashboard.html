@@ -1,5 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h3>Welcome to Dashboard</h3>
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+    <h3 class="h2">Automated Inventory Management System</h3>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        
+    </div>
+</div>
+Welcome, {{ request.user }}
 {% endblock %}

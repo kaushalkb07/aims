@@ -13,12 +13,21 @@ class ProductForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ProductForm, self).__init__(*args, **kwargs)
-        # ✅ Only show RFID cards that are not assigned to any product
-        self.fields['assigned_rfid'].queryset = RFIDEntry.objects.filter(product=None)
 
-        # ✅ Apply Bootstrap styling while keeping your UI
+        if self.instance and self.instance.assigned_rfid:
+            # Show unassigned RFIDs + the already assigned one
+            self.fields['assigned_rfid'].queryset = (
+                RFIDEntry.objects.filter(status='Not Assigned') | 
+                RFIDEntry.objects.filter(id=self.instance.assigned_rfid.id)
+            )
+        else:
+            # Only show RFIDs that are not assigned
+            self.fields['assigned_rfid'].queryset = RFIDEntry.objects.filter(status='Not Assigned')
+
+        # Apply Bootstrap styling
         for field in self.fields:
             self.fields[field].widget.attrs.update({'class': 'form-control'})
+
 
 class StockMovementForm(forms.ModelForm):
     class Meta:

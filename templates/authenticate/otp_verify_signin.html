@@ -10,7 +10,7 @@
     <!-- Bootstrap 5 CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
         integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-    
+
     <style>
         /* Custom Dashboard Styling */
         .dashboard-container {
@@ -18,6 +18,7 @@
             flex-wrap: wrap;
             gap: 20px;
         }
+
         .dashboard-item {
             background-color: #f4f4f9;
             padding: 20px;
@@ -25,14 +26,17 @@
             width: 300px;
             box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
         }
+
         .dashboard-item h3 {
             margin-bottom: 10px;
             font-size: 18px;
         }
+
         .dashboard-item p {
             font-size: 24px;
             font-weight: bold;
         }
+
         canvas {
             width: 100% !important;
             max-width: 250px;
@@ -42,23 +46,32 @@
 </head>
 
 <body>
-<h2 class="container-fluid mt-4">OTP Sign In</h2>
-<!-- Sign-in form with JS-based JWT authentication -->
-<form method="POST" class="container-fluid">
-    {% csrf_token %}
-    <div class="form-group">
-        <label>Enter OTP:</label>
-        <input type="text" name="otp" class="form-control" required>
-        <button type="submit">Verify OTP</button>
-        {% if messages %}{% for message in messages %}<p>{{ message }}</p>{% endfor %}{% endif %}
+    <!-- Flash Messages -->
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
     </div>
-</form>
+    {% endfor %}
+    <h2 class="container-fluid mt-4">OTP Sign In</h2>
+    <!-- Sign-in form with JS-based JWT authentication -->
+    <form method="POST" class="container-fluid">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>Enter OTP:</label>
+            <input type="text" name="otp" class="form-control" required>
+            <button type="submit">Verify OTP</button>
+            {% if messages %}{% for message in messages %}<p>{{ message }}</p>{% endfor %}{% endif %}
+        </div>
+    </form>
 
 
-<!-- Registration link -->
-<div class="form-group container mt-2">
-    <label>Not a registered user? <a href="/signup">Sign Up</a></label>
-</div>
+    <!-- Registration link -->
+    <div class="form-group container mt-2">
+        <label>Not a registered user? <a href="/signup">Sign Up</a></label>
+    </div>
     <!-- Optional JavaScript -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
         integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGgFDMVNA/GpGFF93hXpG5KkN"

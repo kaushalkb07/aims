@@ -10,14 +10,21 @@
     <!-- Bootstrap 5 CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
         integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-    
+
     <style>
         /* Custom Dashboard Styling */
+        .sidebar .nav-item a {
+            font-size: 15.23px;
+        }
+        .sidebar_sticky a {
+            font-size: 10px;
+        }
         .dashboard-container {
             display: flex;
             flex-wrap: wrap;
             gap: 20px;
         }
+
         .dashboard-item {
             background-color: #f4f4f9;
             padding: 20px;
@@ -25,14 +32,17 @@
             width: 300px;
             box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
         }
+
         .dashboard-item h3 {
             margin-bottom: 10px;
             font-size: 18px;
         }
+
         .dashboard-item p {
             font-size: 24px;
             font-weight: bold;
         }
+
         canvas {
             width: 100% !important;
             max-width: 250px;
@@ -42,6 +52,15 @@
 </head>
 
 <body>
+    <!-- Flash Messages -->
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endfor %}
     <!-- Navbar -->
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
         <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/dashboard">AIMS Web</a>
@@ -61,12 +80,18 @@
             <nav class="col-md-2 d-none d-md-block bg-light sidebar">
                 <div class="sidebar-sticky">
                     <ul class="nav flex-column">
-                        <li class="nav-item"><a class="nav-link text-black">Welcome, {{ request.user }}</a></li>
-                        <li class="nav-item"><a class="nav-link text-dark" href="/database_admin/upload_rfid'">🔄 Upload RFID Data</a></li>
-                        <li class="nav-item"><a class="nav-link text-dark" href="/database_admin/upload_product">📋 Upload Product Data</a></li>
-                        <li class="nav-item"><a class="nav-link text-dark" href="/database_admin/upload_stock">📊 Upload Stock Data</a></li>
-                        <li class="nav-item"><a class="nav-link text-dark" href="/database_admin/add_product">➕ Add Products</a></li>
-                        <li class="nav-item"><a class="nav-link text-dark" href="/database_admin/product_list">📦 Product List</a></li>
+                        {% if request.user.is_superuser %}
+                        <li class="nav-item"><a class="nav-link text-dark" href="/database_admin/upload_rfid">🔄 Upload
+                                RFID Data</a></li>
+                        <li class="nav-item"><a class="nav-link text-dark" href="/database_admin/upload_product">📋
+                                Upload Product Data</a></li>
+                        <li class="nav-item"><a class="nav-link text-dark" href="/database_admin/upload_stock">📊 Upload
+                                Stock Data</a></li>
+                        {% endif %}
+                        <li class="nav-item"><a class="nav-link text-dark" href="/database_admin/add_product">➕ Add
+                                Products</a></li>
+                        <li class="nav-item"><a class="nav-link text-dark" href="/database_admin/product_list">📦
+                                Product List</a></li>
                         <li class="nav-item"><a class="nav-link text-danger" href="/auth/signout">🚪 Logout</a></li>
                     </ul>
                 </div>
@@ -74,28 +99,8 @@
 
             <!-- Main Content Area -->
             <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-                    <h3 class="h2">📌 Automated Inventory Management System</h3>
-                    <div class="btn-toolbar mb-2 mb-md-0">
-    
-                    </div>
-                </div>
-
-                <!-- Flash Messages -->
-                {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                {% endfor %}
-
-                <!-- Dynamic Content Block -->
-                <div class="main-section">
-                    {% block content %}
-                    {% endblock content %}
-                </div>
+                {% block content %}
+                {% endblock content %}
             </main>
         </div>
     </div>
@@ -112,7 +117,21 @@
         crossorigin="anonymous"></script>
     <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Auto-dismiss after 5 seconds
+            setTimeout(function () {
+                $(".alert").fadeOut("slow");
+            }, 5000);
+    
+            // Close button functionality
+            $(".alert .close").click(function () {
+                $(this).closest(".alert").fadeOut("slow");
+            });
+        });
+    </script>
+    
 </body>
 
 </html>
