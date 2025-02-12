@@ -7,6 +7,8 @@ from django.contrib.auth.decorators import login_required
 from .models import RFIDEntry, Product, StockMovement
 from .forms import ProductForm, RFIDEntryForm
 from django.urls import reverse
+from datetime import datetime
+from django.utils.timezone import make_aware
 
 # Helper function to handle CSV/Excel upload
 def handle_uploaded_file(file, model_class, user=None):
@@ -181,51 +183,84 @@ def rfid_list(request):
 
     return render(request, "dashboard/rfid_entries_list.html", {"rfid_entries": rfid_entries, "query": query})
 
-
-# Fetch data from firebase and store in the database
-@login_required
-def fetch_firebase_data(request):
-    ref_entries = db.reference("products_entries")
-    ref_exits = db.reference("products_exits")
-
-    entries_data = ref_entries.get() or {}
-    exits_data = ref_exits.get() or {}
-
-    for key, data in entries_data.items():
-        tag_id = data.get("tagID")
-        timestamp = data.get("timestamp")
-
-        # Fetch Product Name using RFID
-        product = Product.objects.filter(assigned_rfid__rfid_tag=tag_id).first()
-        product_name = product.name if product else "Unknown Product"
-
-        # Store entry movement
-        StockMovement.objects.update_or_create(
-            rfid_tag=tag_id,
-            action="IN",
-            defaults={"product_name": product_name, "quantity": 1, "timestamp_in": timestamp}
-        )
-
-    for key, data in exits_data.items():
-        tag_id = data.get("tagID")
-        timestamp = data.get("timestamp")
-
-        # Fetch Product Name using RFID
-        product = Product.objects.filter(assigned_rfid__rfid_tag=tag_id).first()
-        product_name = product.name if product else "Unknown Product"
-
-        # Store exit movement
-        StockMovement.objects.update_or_create(
-            rfid_tag=tag_id,
-            action="OUT",
-            defaults={"product_name": product_name, "quantity": 1, "timestamp_out": timestamp}
-        )
-
-    messages.success(request, "Stock movement data fetched from Firebase successfully.")
-    return redirect("stock_movement_list")
-
 # View to list stock movements
 @login_required
 def stock_movement_list(request):
     stock_movements = StockMovement.objects.all().order_by('-timestamp_in')
     return render(request, "dashboard/stock_movement_list.html", {"stock_movements": stock_movements})
+
+# View to fetch data from Firebase and store in the database
+@login_required
+def fetch_firebase_data(request):
+    try:
+        ref = db.reference("/")  # Firebase Root
+        data = ref.get()
+
+        if not data:
+            return render(request, "dashboard/fetch_firebase.html", {"message": "No data found in Firebase."})
+
+        product_entries = data.get("product_entries", {})
+        product_exits = data.get("product_exits", {})
+
+        # ✅ Process product entries (Stock IN)
+        for tag_id, details in product_entries.items():
+            process_stock_movement(details, action="IN")
+
+        # ✅ Process product exits (Stock OUT)
+        for tag_id, details in product_exits.items():
+            process_stock_movement(details, action="OUT")
+
+        return render(request, "dashboard/fetch_firebase.html", {"message": "Firebase data fetched and stored successfully!"})
+
+    except Exception as e:
+        return render(request, "dashboard/fetch_firebase.html", {"message": f"Error fetching data: {str(e)}"})
+
+def process_stock_movement(details, action):
+    rfid_tag_value = details.get("tagID")  # ✅ Ensure correct key from Firebase
+
+    # ✅ Convert integer timestamp to datetime
+    timestamp = make_aware(datetime.utcfromtimestamp(details.get("timestamp", 0)))
+
+    # ✅ Fetch RFID Entry using rfid_tag
+    rfid_entry = RFIDEntry.objects.filter(rfid_tag=rfid_tag_value).first()
+    if not rfid_entry:
+        print(f"RFID {rfid_tag_value} not found in the database.")
+        return
+
+    # ✅ Fetch Product using RFID
+    product = Product.objects.filter(assigned_rfid=rfid_entry.rfid_tag).first()
+    product_name = product.name if product else "Unknown"
+    quantity = product.quantity if product else 0
+
+    # ✅ Store Stock Movement (Using Only rfid_tag, No ID)
+    stock_movement, created = StockMovement.objects.get_or_create(
+        rfid_tag=rfid_tag_value,  # ✅ Use rfid_tag as unique identifier
+        action=action,
+        defaults={
+            "product_name": product_name,
+            "quantity": quantity,
+            "timestamp_in": timestamp if action == "IN" else None,
+            "timestamp_out": timestamp if action == "OUT" else None,
+        }
+    )
+
+    if not created:
+        if action == "IN":
+            stock_movement.timestamp_in = timestamp
+        elif action == "OUT":
+            stock_movement.timestamp_out = timestamp
+        stock_movement.product_name = product_name
+        stock_movement.quantity = quantity
+        stock_movement.save()
+
+    print(f"Stock movement recorded for {rfid_tag_value} - {action}")
+
+
+
+
+
+
+
+
+
+

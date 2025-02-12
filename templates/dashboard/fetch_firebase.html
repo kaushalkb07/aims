@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h4 class="mb-4">Fetch Firebase Data</h4>
+    <div class="card shadow-sm p-4">
+        {% if message %}
+            <div class="alert alert-info">{{ message }}</div>
+        {% endif %}
+        <a href="/database_admin/stock-movement" class="btn btn-primary">View Stock Movements</a>
+    </div>
+</div>
+{% endblock %}

@@ -2,41 +2,43 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h4 class="mb-4 text-center">Stock Movement</h4>
-
-    <a href="/database_admin/fetch-firebase" class="btn btn-success mb-3">Fetch from Firebase</a>
-
+    <h4 class="mb-4">Stock Movement List</h4>
+    <a href="/database_admin/fetch-firebase" class="btn btn-primary">Fetch Firebase Data</a><br><br>
     <div class="card shadow-sm p-4">
-        <div class="table-responsive"></div>
-        <table class="table table-hover table-striped text-center align-middle">
-            <thead class="table-dark">
-                <tr>
-                    <th>RFID Tag</th>
-                    <th>Product Name</th>
-                    <th>Quantity</th>
-                    <th>Action</th>
-                    <th>Timestamp</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for stock in stock_movements %}
-                <tr>
-                    <td>{{ stock.rfid_tag }}</td>
-                    <td>{{ stock.product_name }}</td>
-                    <td>{{ stock.quantity }}</td>
-                    <td>
-                        {% if stock.action == "IN" %}
-                        <span class="badge badge-success">IN</span>
-                        {% else %}
-                        <span class="badge badge-danger">OUT</span>
-                        {% endif %}
-                    </td>
-                    <td>{{ stock.timestamp_in|default:stock.timestamp_out }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        {% if stock_movements %}
+            <table class="table table-hover table-striped text-center">
+                <thead class="table-primary">
+                    <tr>
+                        <th>S.No</th>
+                        <th>RFID Tag</th>
+                        <th>Product Name</th>
+                        <th>Quantity</th>
+                        <th>Action</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for movement in stock_movements %}
+                    <tr>
+                        <td>{{ movement.sno }}</td>
+                        <td>{{ movement.rfid_tag }}</td>
+                        <td>{{ movement.product_name }}</td>
+                        <td>{{ movement.quantity }}</td>
+                        <td>{{ movement.action }}</td>
+                        <td>
+                            {% if movement.action == "IN" %}
+                                {{ movement.timestamp_in }}
+                            {% else %}
+                                {{ movement.timestamp_out }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No stock movement records found.</p>
+        {% endif %}
     </div>
-</div>
 </div>
 {% endblock %}

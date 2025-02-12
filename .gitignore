@@ -1,0 +1,36 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+
+# Django-specific
+*.log
+*.pot
+*.pyc
+*.pyo
+*.sqlite3
+*.db
+db.sqlite3
+
+# Secret keys and environment settings
+.env
+config/firebase_credentials.json
+
+# Media uploads (optional)
+media/
+
+# Static files (optional, if collected separately)
+staticfiles/
+
+# VSCode settings (optional)
+.vscode/
+
+# PyCharm settings (optional)
+.idea/
+
+# macOS files
+.DS_Store

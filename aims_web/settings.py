@@ -22,14 +22,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 LOGIN_URL = '/auth/signin/'  # Point to your custom login view
 
-# Firebase configuration
-FIREBASE_CREDENTIALS_PATH = os.path.join(BASE_DIR, "config/firebase_config.json")
 
-# Initialize Firebase
-cred = credentials.Certificate(FIREBASE_CREDENTIALS_PATH)
-firebase_admin.initialize_app(cred, {
-    'databaseURL': 'https://aims-e842c-default-rtdb.firebaseio.com/'  # Replace with your actual Firebase DB URL
-})
+FIREBASE_CREDENTIALS_PATH = "config/firebase_credentials.json"  # Adjust the path
+
+if not firebase_admin._apps:  # Prevent duplicate initialization
+    cred = credentials.Certificate(FIREBASE_CREDENTIALS_PATH)
+    firebase_admin.initialize_app(cred, {
+        'databaseURL': "https://aims-e842c-default-rtdb.firebaseio.com"  # Replace with your Firebase Realtime Database URL
+    })
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
