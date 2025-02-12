@@ -8,6 +8,7 @@ class RFIDEntry(models.Model):
     rfid_tag_description = models.CharField(max_length=100)
     status = models.CharField(max_length=20, choices=[("Not Assigned", "Not Assigned"), ("Assigned", "Assigned")], default="Not Assigned")
     timestamp = models.DateTimeField(default=now)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)  # ✅ Track who added the product
 
     def __str__(self):
         return f"{self.rfid_tag} ({self.status})"

@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import os
+import firebase_admin
+from firebase_admin import credentials, db
 from django.contrib.messages import constants as messages
 from django.templatetags.static import static
 
@@ -20,6 +22,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 LOGIN_URL = '/auth/signin/'  # Point to your custom login view
 
+# Firebase configuration
+FIREBASE_CREDENTIALS_PATH = os.path.join(BASE_DIR, "config/firebase_config.json")
+
+# Initialize Firebase
+cred = credentials.Certificate(FIREBASE_CREDENTIALS_PATH)
+firebase_admin.initialize_app(cred, {
+    'databaseURL': 'https://aims-e842c-default-rtdb.firebaseio.com/'  # Replace with your actual Firebase DB URL
+})
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/

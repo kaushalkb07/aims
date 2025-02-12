@@ -6,3 +6,4 @@ pyotp==2.6.0
 openpyxl==3.0.9
 django-corn==1.7.0
 pandas==1.4.0
+firebase-admin==6.6.0

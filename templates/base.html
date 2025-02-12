@@ -74,7 +74,7 @@
 
     <!-- Flash Messages -->
     {% if messages %}
-    <div class="container mt-3">
+    <div class="">
         {% for message in messages %}
         <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
             {{ message }}
@@ -87,11 +87,7 @@
     <!-- Navbar -->
     <nav class="navbar navbar-dark bg-dark sticky-top">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/dashboard">AIMS Web</a>
-            <form class="d-flex" method="GET" action="">
-                <input class="form-control me-2" type="search" name="query" placeholder="Search datas..."
-                    value="{{ query }}" id="query">
-                <button class="btn btn-outline-light" type="submit">Search</button>
+            <a class="navbar-brand" href="/dashboard">AIMS Web</a>n class="btn btn-outline-light" type="submit">Search</button>
             </form>
         </div>
     </nav>
@@ -129,7 +125,18 @@
                             </a>
                         </li>
                         {% endif %}
-
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/database_admin/add_rfid/' %}active{% endif %}"
+                                href="/database_admin/add_rfid">
+                                ➕ Add RFID Cards
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/database_admin/rfid_list/' %}active{% endif %}"
+                                href="/database_admin/rfid_list">
+                                📟 RFID Card List
+                            </a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link {% if request.path == '/database_admin/add_product/' %}active{% endif %}"
                                 href="/database_admin/add_product">
@@ -140,6 +147,12 @@
                             <a class="nav-link {% if request.path == '/database_admin/product_list/' %}active{% endif %}"
                                 href="/database_admin/product_list">
                                 📦 Product List
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/database_admin/stock-movement/' %}active{% endif %}"
+                                href="/database_admin/stock-movement">
+                                📈 Stock Movement
                             </a>
                         </li>
                         <li class="nav-item">

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h4 class="mb-4">Edit RFID Entry</h4>
+
+    <div class="card shadow-sm p-4">
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="rfid_tag">RFID Tag:</label>
+                {{ form.rfid_tag }}
+            </div>
+
+            <div class="form-group">
+                <label for="rfid_tag_description">Description:</label>
+                {{ form.rfid_tag_description }}
+            </div>
+
+            <div class="form-group">
+                <label for="status">Status:</label>
+                {{ form.status }}
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block mt-3">Update RFID Entry</button>
+            <a href="/database_admin/rfid_list" class="btn btn-secondary btn-block mt-2">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
