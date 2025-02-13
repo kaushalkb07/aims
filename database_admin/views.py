@@ -186,15 +186,24 @@ def rfid_list(request):
 # View to list stock movements
 @login_required
 def stock_movement_list(request):
-    stock_movements = StockMovement.objects.all().order_by('-timestamp_in')
-    return render(request, "dashboard/stock_movement_list.html", {"stock_movements": stock_movements})
+    query = request.GET.get("query", "").strip()
 
-from django.utils.timezone import make_aware
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from firebase_admin import db
-from datetime import datetime
-from .models import StockMovement, RFIDEntry, Product
+    if query:
+        stock_movements = StockMovement.objects.filter(
+            rfid_tag__rfid_tag__icontains=query  # Search by RFID Tag
+        ) | StockMovement.objects.filter(
+            product_name__icontains=query  # Search by Product Name
+        ) | StockMovement.objects.filter(
+            action__icontains=query  # Search by IN/OUT
+        )
+    else:
+        stock_movements = StockMovement.objects.all()
+
+    return render(request, "dashboard/stock_movement_list.html", {
+        "stock_movements": stock_movements,
+        "query": query
+    })
+
 
 @login_required
 def fetch_firebase_data(request):
