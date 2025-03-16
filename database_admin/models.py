@@ -39,14 +39,13 @@ class Product(models.Model):
 
 class StockMovement(models.Model):
     sno = models.AutoField(primary_key=True)
-    rfid_tag = models.ForeignKey(RFIDEntry, on_delete=models.CASCADE, to_field="rfid_tag")
-    product_name = models.CharField(max_length=255)
-    quantity = models.IntegerField()
-    ACTION_CHOICES = [('IN', 'In'), ('OUT', 'Out')]
-    action = models.CharField(max_length=10, choices=ACTION_CHOICES)
-    timestamp_in = models.DateTimeField(default=now, null=True, blank=True)
+    rfid_tag = models.ForeignKey(RFIDEntry, on_delete=models.CASCADE)
+    action = models.CharField(max_length=10, choices=[("IN", "IN"), ("OUT", "OUT")])
+    timestamp_in = models.DateTimeField(null=True, blank=True)
     timestamp_out = models.DateTimeField(null=True, blank=True)
+    product_name = models.CharField(max_length=255)
+    quantity = models.PositiveIntegerField()
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.product_name} ({self.rfid_tag.rfid_tag}) - {self.action}"
+        return f"{self.product_name} - {self.action}"

@@ -4,8 +4,69 @@
 <div class="mt-2 d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
     <h3 class="h2">Automated Inventory Management System</h3>
     <div class="btn-toolbar mb-2 mb-md-0">
-        
+
     </div>
 </div>
 Welcome, {{ request.user }}
-{% endblock %}
+<div class="container mt-3">
+    <!-- Stock Summary -->
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h4>Total Products</h4>
+                    <p>{{ total_products }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h4>Stock IN</h4>
+                    <p>{{ total_in_movement }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <h4>Stock Out</h4>
+                    <p>{{ total_out_movement }}</p>
+                </div>
+            </div>
+        </div> </div>
+
+        <!-- Recent Stock Movements -->
+        <h4 class="mt-4">📋 Recent Stock Movements</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>RFID Tag</th>
+                    <th>Product</th>
+                    <th>Action</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for movement in recent_movements %}
+                <tr>
+                    <td>{{ movement.rfid_tag.rfid_tag }}</td>
+                    <td>{{ movement.product_name }}</td>
+                    <td><span class="badge bg-primary">{{ movement.action }}</span></td>
+                    <td>{{ movement.timestamp_in|default:movement.timestamp_out }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">No recent movements</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Quick Actions -->
+        <h3 class="mt-3">🚀 Quick Actions</h3>
+        <a href="{% url 'add_product' %}" class="btn btn-primary mt-2">📥 Add Product</a>
+        <a href="{% url 'fetch_firebase_data' %}" class="btn btn-success mt-2">🔄 Sync Firebase</a>
+        <a href="{% url 'stock_movement_list' %}" class="btn btn-warning mt-2">📄 View Stock Movements</a>
+    </div>
+    {% endblock %}

@@ -6,8 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .models import RFIDEntry, Product, StockMovement
 from .forms import ProductForm, RFIDEntryForm
-from django.urls import reverse
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.utils.timezone import make_aware
 
 # Helper function to handle CSV/Excel upload
@@ -145,7 +144,7 @@ def add_rfid(request):
             rfid_entry.user = request.user  # Track the user who added the entry
             rfid_entry.save()
             messages.success(request, "RFID Entry added successfully!")
-            return redirect('rfid_entries_list')
+            return redirect('rfid_list')
     else:
         form = RFIDEntryForm()
     return render(request, 'dashboard/add_rfid_entries.html', {'form': form})
@@ -159,7 +158,7 @@ def edit_rfid(request, entry_id):
         if form.is_valid():
             form.save()
             messages.success(request, "RFID Entry updated successfully!")
-            return redirect('rfid_entries_list')
+            return redirect('rfid_list')
     else:
         form = RFIDEntryForm(instance=rfid_entry)
 
@@ -170,7 +169,7 @@ def delete_rfid(request, entry_id):
     rfid_entry = get_object_or_404(RFIDEntry, id=entry_id)
     rfid_entry.delete()
     messages.success(request, "RFID Entry deleted successfully!")
-    return redirect('rfid_entries_list')
+    return redirect('rfid_list')
 
 @login_required
 def rfid_list(request):
@@ -183,7 +182,6 @@ def rfid_list(request):
 
     return render(request, "dashboard/rfid_entries_list.html", {"rfid_entries": rfid_entries, "query": query})
 
-# View to list stock movements
 @login_required
 def stock_movement_list(request):
     query = request.GET.get("query", "").strip()
@@ -197,7 +195,9 @@ def stock_movement_list(request):
             action__icontains=query  # Search by IN/OUT
         )
     else:
-        stock_movements = StockMovement.objects.all()
+        stock_movements = StockMovement.objects.all().order_by('-timestamp_in')
+
+    print("Stock Movements in View:", stock_movements)
 
     return render(request, "dashboard/stock_movement_list.html", {
         "stock_movements": stock_movements,
@@ -211,82 +211,70 @@ def fetch_firebase_data(request):
         ref = db.reference("/")
         data = ref.get()
 
-        # ✅ Debug: Print data to check if product_entries exists
-        print("Fetched Firebase Data:", data)
-
         if not data:
             return render(request, "dashboard/fetch_firebase.html", {"message": "No data found in Firebase."})
 
-        product_entries = data.get("product_entries", {})  # ✅ IN Movements
-        product_exits = data.get("product_exits", {})  # ✅ OUT Movements
-
-        # ✅ Debug: Check if product_entries is actually fetched
-        print("Product Entries:", product_entries)
-        print("Product Exits:", product_exits)
+        products_entry = data.get("products_entry", {})  # ✅ IN Movements
+        products_exit = data.get("products_exit", {})  # ✅ OUT Movements
 
         new_entries = 0
         new_exits = 0
 
         # ✅ Process IN movements
-        for tag_id, details in product_entries.items():
-            if details:  # Ensure details exist
+        for tag_id, details in products_entry.items():
+            if details:
                 timestamp = make_aware(datetime.utcfromtimestamp(details.get("timestamp", 0)))
                 if not stock_movement_exists(details, "IN", timestamp):
                     process_stock_movement(details, "IN", request.user)
                     new_entries += 1
 
         # ✅ Process OUT movements
-        for tag_id, details in product_exits.items():
-            if details:  # Ensure details exist
+        for tag_id, details in products_exit.items():
+            if details:
                 timestamp = make_aware(datetime.utcfromtimestamp(details.get("timestamp", 0)))
                 if not stock_movement_exists(details, "OUT", timestamp):
                     process_stock_movement(details, "OUT", request.user)
                     new_exits += 1
 
-        message = f"New IN: {new_entries}, New OUT: {new_exits}. Data is up-to-date!"
+        message = f"New IN: {new_entries}, New OUT: {new_exits}. Data stored successfully!"
         return render(request, "dashboard/fetch_firebase.html", {"message": message})
 
     except Exception as e:
         return render(request, "dashboard/fetch_firebase.html", {"message": f"Error fetching data: {str(e)}"})
 
-
-# ✅ Process stock movements
 def process_stock_movement(details, action, user=None):
+    print(f"Processing Stock Movement: {details}, Action: {action}")
+
     rfid_tag_value = details.get("tagID")
     timestamp = make_aware(datetime.utcfromtimestamp(details.get("timestamp", 0)))
 
+    # Check if RFID exists in RFIDEntry
     rfid_entry = RFIDEntry.objects.filter(rfid_tag=rfid_tag_value).first()
     if not rfid_entry:
-        print(f"RFID {rfid_tag_value} not found in the database.")
+        print(f"RFID {rfid_tag_value} not found in database.")  # Debugging
         return
 
+    # Check if Product exists
     product = Product.objects.filter(assigned_rfid=rfid_entry).first()
     product_name = product.name if product else "Unknown"
     quantity = product.quantity if product else 1
 
-    if action == "IN":
-        StockMovement.objects.create(
-            rfid_tag=rfid_entry,
-            action="IN",
-            timestamp_in=timestamp,
-            product_name=product_name,
-            quantity=quantity,
-            user=user
-        )
-    elif action == "OUT":
-        StockMovement.objects.create(
-            rfid_tag=rfid_entry,
-            action="OUT",
-            timestamp_out=timestamp,
-            product_name=product_name,
-            quantity=quantity,
-            user=user
-        )
+    # Create StockMovement
+    stock_movement = StockMovement.objects.create(
+        rfid_tag=rfid_entry,
+        action=action,
+        timestamp_in=timestamp if action == "IN" else None,
+        timestamp_out=timestamp if action == "OUT" else None,
+        product_name=product_name,
+        quantity=quantity,
+        user=user
+    )
 
-    print(f"Stock movement recorded: {rfid_tag_value} - {action}")
+    print(f"Stock movement stored: {stock_movement}")  # Debugging
 
 
-# ✅ Check if stock movement already exists (Prevent Redundancy)
+
+# ✅ Check if stock movement already exists
 def stock_movement_exists(details, action, timestamp):
     rfid_tag_value = details.get("tagID")
 
@@ -302,6 +290,13 @@ def stock_movement_exists(details, action, timestamp):
             action="OUT",
             timestamp_out=timestamp
         ).exists()
+
+
+
+
+
+
+
 
 
 

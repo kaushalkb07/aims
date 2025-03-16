@@ -23,6 +23,7 @@
                     <th>Quantity</th>
                     <th>Action</th>
                     <th>Timestamp</th>
+                    <th>Added by:</th>
                 </tr>
             </thead>
             <tbody>
@@ -38,6 +39,13 @@
                         {{ movement.timestamp_in }}
                         {% else %}
                         {{ movement.timestamp_out }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if movement.user %}
+                            {{ movement.user.username }}
+                        {% else %}
+                            <span class="text-muted">[Unknown]</span>
                         {% endif %}
                     </td>
                 </tr>
